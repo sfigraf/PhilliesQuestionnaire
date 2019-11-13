@@ -1,0 +1,211 @@
+---
+title: ' Question Responses'
+author: "Sam Graf"
+date: "November 11, 2019"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+###Question 1
+
+At a base level, expanding the roster to 26 players creates more opportunities for prospects. The talent margin between Triple A and MLB is razor thin and giving more players opportunities to succeed allows a team to utilize talent where they couldn’t before. Expanding the rosters will also decrease overall playing time for players, ideally leading to reduced rate of injuries. Top-level players would therefore miss less games, improving the on-field product and raising the standard of play. Therefore, expanding the roster to 26 players would be a net benefit to the players, the fans, and the game itself. 
+
+It makes the most strategic and fiscal sense for a team to utilize this spot by adding another bullpen arm. Most trips to the injured list occur by pitchers, with elbow and shoulder injuries leading the way. Although the exact cause of arm injuries is unknown, one factor that is generally accepted to elevate their risk is overuse. Adding another bullpen arm relieves stress on pitchers that would otherwise be forced to take a more substantial burden and allows other pitchers to play closer to their optimum skill level. Keeping elite talent on the field gives the team a higher chance of winning and draws more fans besides. Financially, a team is invested in its players, and millions of dollars are lost each year when elite players are sidelined by injury. 
+
+A reliever adds to the strategy of the game by giving the manager another option to ponder. A good reliever in the right spot can hold another team down and keep a steady ship during a tough stretch of games during a long season. This contributes to the well-being of a club and higher competition throughout MLB.
+
+Another bullpen arm might seem like a mundane addition to many, but its impacts would be compounded throughout the pitching staff. Every team would benefit from the enhanced depth, and the level of play would too.
+
+
+###Question 2
+
+I would attempt to form guidelines for stealing based off of both analytics and in-game awareness. 
+
+
+Strictly speaking, runners are successful in stealing when their time to the base is quicker than the time it takes the pitcher to throw home and the catcher to throw to the base. This can be obtained by an excellent top speed, a quick acceleration time, and an aggressive, smart lead off the base. Using available data, a runner and the team should know beforehand whether or not his time from base to base is generally quicker than the pitcher’s time to throw home and the catcher’s time to throw to second. Additionally, a runner should know when an off-speed pitch is more likely to be thrown in specific counts, to specific hitters, by specific pitchers. Off-speed pitches give a runner more time to slide under the tag and knowing the pitcher’s tendencies place the runner at an advantage. All this is data obtained beforehand by the team and should be reviewed before games.
+
+In-game awareness should also dictate when a runner should steal a base. If the pitcher isn’t paying attention to the runner and allows him to get a substantially larger lead or is taking longer to the plate than normal, they have a higher chance at a successful steal. They'll also have a higher success rate if the catcher has a sore arm or has been throwing inaccurate throws lately, or if the pitcher has the yips and can’t pick off, or if the runner catches a movement off a pitcher that tips that he’s throwing home instead of to the base. Game situation also helps dictate whether a player should steal or not. A player shouldn’t steal third when there’s two outs with a good hitter at the plate and their team is down one run, for example. 
+
+A fast runner has a high chance of success if they’ve done their homework and possess good in-game instincts. Every attempt may not be successful but following these guidelines would put the runner in the best possible position to succeed. 
+
+
+###Question 3
+```{r, include = FALSE}
+library(tidyverse)
+library(knitr)
+#library(gganimate)
+theme_set(theme_classic())
+
+#reading in data
+mlbadv <- read_csv("mlb advanced 2019.csv")
+mlbstd <- read_csv("mlb standard 2019.csv")
+mlbbbs <- read_csv("mlb battedballs 2019.csv")
+
+mlb <- left_join(mlbstd, mlbadv, by = "League")
+mlb <- left_join(mlb, mlbbbs, by = "League")
+
+batters <- read_csv("batters advanced 2019.csv")
+battersstd <- read_csv("batters standard 2019.csv")
+battersbattedballs <- read_csv("batters battedballs 2019.csv")
+
+batters2019 <- left_join(battersstd, batters, by = "Name")
+batters2019 <- left_join(batters2019, battersbattedballs, by = "Name")
+
+teamadv <- read_csv("team advanced batting 2019.csv")
+teamstd <- read_csv("team standard batting 2019.csv")
+teambbs <- read_csv("team battedballs 2019.csv")
+
+team2019 <- left_join(teamstd, teamadv, by = "Tm")
+team2019 <- left_join(team2019, teambbs, by = "Tm")
+
+ODCcareeradv <- read.csv("career ODC advanced.csv")
+ODCcareerbbs <- read.csv("career ODC battedballs.csv")
+ODCcareerstd <- read.csv("career ODC standard.csv")
+
+careerODC <- left_join(ODCcareerstd, ODCcareeradv, by = "Name")
+careerODC <- left_join(careerODC, ODCcareerbbs, by = "Name")
+
+#making mlb average a part of the batters dataset
+all <- bind_rows(mlb, team2019,batters2019)
+all[1,c("Name")] <- "MLB" #changing the Name to MLB 
+all[27,c("Name")] <- "PHI" #changing the Name to PHI 
+
+y <- all %>%
+  filter(Name == "Corey Dickerson" |
+        Name == "Marcell Ozuna" |
+        Name == "Nicholas Castellanos" |
+          Name == "MLB" |
+          Name == "PHI")
+
+defense <- data.frame(Player = c("Marcell Ozuna", "Corey Dickerson", "Nicholas Castellanos"), 
+                  UZR150 = c(8.6, -12,-4.9))
+```
+
+When evaluating Marcell Ozuna, Corey Dickerson, and Nick Castellanos, teams should know first and foremost what they’re looking for in terms of offense and defense. Castellanos is a well-below average defender, but has improved from 2018-2019 by ultimate zone rating per 150 games (-12.3 in 2018 to -4.9 in 2019).  Marcell Ozuna was the best of the three in 2019, while Corey Dickerson was also below average; however, given that he has always posted a positive UZR/150 in the past three years, it's possible that this drop-off can be somewhat attributed to his injuries attained this year. 
+
+```{r, echo = FALSE, fig.width=9}
+
+defense %>%
+  ggplot(aes(x = Player, y = UZR150)) +
+  geom_bar(stat = "identity", aes(fill = Player)) +
+  labs(title = "2019 UZR/150",
+       caption = "Ultimate zone rating per 150 games: The number of runs above or below average a fielder is in range runs, \n outfield arm runs, double play runs and error runs combined per 150 games") +
+  theme(legend.title=element_blank())
+
+```
+
+A lot will depend on how Dickerson will come back from injury, but Ozuna was the best defensive option between the three of these outfielders in 2019. 
+
+To evaluate the outfielders offensively, it's worthwhile to look at some of their advanced stats and anticipated contract requirements while keeping their age in mind. If a player is past their prime, it can be harder to trust a player to perform in the future. 
+```{r, include = FALSE}
+ozuna <- read_csv("ozuna career.csv")
+dickerson <- read_csv("dickerson career.csv")
+castellanos <- read_csv("castellanos career.csv")
+
+castellanos <- castellanos %>%
+  mutate(Age = (28-nrow(castellanos)):27,
+         OPS = OBP + SLG)
+
+ozuna <- ozuna %>%
+  mutate(Age = (30-nrow(ozuna)):29,
+         OPS = OBP + SLG)
+
+dickerson <- dickerson %>%
+  mutate(Age = (31-nrow(dickerson)):30,
+         OPS = OBP + SLG)
+
+
+
+fit.model <- function(d) {
+  fit <- lm(OPS ~ I(Age - 30) + I((Age - 30)^2), data=d)
+  b <- coef(fit)  
+  Age.max <- 30 - b[2]/ b[3]/ 2  
+  Max <- b[1] - b[2] ^ 2/ b[3]/ 4  
+  list(fit=fit,  Age.max=Age.max, Max=Max)  
+} 
+
+
+
+
+```
+
+
+
+```{r, include = FALSE}
+#OZUNA
+F2 <- fit.model(ozuna)
+coef(F2$fit)
+c(F2$Age.max,F2$Max) #peak 
+```
+
+```{r, echo = FALSE}
+with(ozuna, plot(Age, OPS, cex=1.5, pch=19)) 
+lines(ozuna$Age, predict(F2$fit, Age=ozuna$Age), lwd=3) 
+title(main = "Career OPS Trajectory of Ozuna")   
+
+```
+```{r, include = FALSE}
+#Dickerson
+F2 <- fit.model(dickerson)
+coef(F2$fit)
+c(F2$Age.max,F2$Max)  
+```
+
+```{r, echo = FALSE}
+with(dickerson, plot(Age, OPS, cex=1.5, pch=19)) 
+
+lines(dickerson$Age, predict(F2$fit, Age=dickerson$Age), lwd=3)
+title(main = "Career OPS Trajectory of Dickerson")      
+
+```
+
+
+```{r, include = FALSE}
+#castellanos
+F2 <- fit.model(castellanos)
+coef(F2$fit)
+c(F2$Age.max,F2$Max) #peak at Age 25  
+```
+
+```{r, echo = FALSE}
+with(castellanos, plot(Age, OPS, cex=1.5, pch=19)) 
+
+lines(castellanos$Age, predict(F2$fit, Age=castellanos$Age), lwd=3)
+title(main = "Career OPS Trajectory of Castellanos")      
+
+```
+
+Given that the peak age for hitters is around age 29, these players are all relatively close to their primes as judged by OPS. Specifically in 2019, each hitter turned in a decent performance. 
+
+```{r, include = FALSE}
+selectedstats <- y %>%
+  select("Name", "OPS","BB/K", "SB", "ISO","BABIP", "wOBA","Hard%", "LD%","Pull%")
+round_df <- function(df, digits) {
+  nums <- vapply(df, is.numeric, FUN.VALUE = logical(1))
+  
+  df[,nums] <- round(df[,nums], digits = digits)
+  
+  (df)
+}
+
+selectedstats <- round_df(selectedstats,3)
+```
+```{r echo = FALSE, resuslts = "asis"}
+kable(selectedstats,caption = "2019 Stats with MLB and Phillies Comparisons")
+```
+
+
+An interesting metric that sticks out is that Ozuna has the highest hard-hit rate of the three, yet also has the lowest BABIP and OPS. It's posited that this is due in part to [an increased pull% into the shift more, particularly on ground balls](https://www.mlb.com/news/marcell-ozuna-underperforming-elite-metrics). During his more successful season in 2017, Ozuna sprayed balls more equally to all fields and his performance soared. Despite his underperformance, Ozuna has been an above-average player and his perceived high ceiling and raw tools make him a very attractive acquisition.  
+
+It also stands out that the BB/K ratio of Dickerson and Castellanos are well below average. Castellanos' production after being traded to the Cubs was outstanding, but when his hard hit rate doesn't jump off the board and his BABIP is well above the league average of .298, I expect that some regression will occur. However, Castellanos does a good job of hitting to all fields (his pull % of 40% is right on the league average) and has always been a consistent producer. Offensively, he remains a solid offensive option. 
+
+Dickerson is similar to Castellanos by a lot of metrics: defense leaves something to be desired, little speed on the bases, low walk-rate but a consistent, proven producer who hits to all fields. Before his foot fracture, he had a .906 OPS and had a solid year in 279 plate appearances. If he fully recovers, he too will be an appealing addition.
+
+
+For a team with a win-now mentality, each of these outfielders have a lot to contribute. Each player has a proven track record of production with more good years in front of them. Ozuna's potential makes him an intriguing buy, but it also gives him leverage. He's projected to go for a 5+ year contract at an AAV of at least $14 million and probably higher. Castellanos is also thought to command a similar AAV, but only around four years long. Dickerson is projected to only go for a two year contract with an AAV of $7-$8 million.  
+
+Castellanos should ideally be signed by a team in need of a middle-of-the-order bat with solid defensive outfielders to minimize his incompetence, though he may continue to improve. Dickerson is a cheaper option with a similar offensive profile, but closer to the other side of the aging curve and coming off a substantial injury. Nonetheless, he has the potential to vastly outperform his contract value and should be signed by a team looking for depth or a high-upside player that can be acquired for a relatively low price. Ozuna hits balls harder than either of the two, but has yet to consistently live up to the potential hinted by his peripheral stats. Even still, he boasts considerable production and would be significant upgrade for most teams on the market, albeit at a higher price.  
